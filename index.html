@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SMART CBT</title>
-  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/9805/9805578.png" type="image/x-icon">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3352/3352908.png" type="image/x-icon">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -155,7 +155,7 @@
     </div>
 
     <div class="iframe-container">
-      <iframe id="appFrame" src="" allow="fullscreen; camera; microphone" sandbox="allow-scripts allow-forms allow-popups allow-modals allow-downloads"></iframe>
+      <iframe id="appFrame" src="" allow="fullscreen; camera; microphone" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"></iframe>
     </div>
   </div>
 
@@ -167,10 +167,10 @@
     const loading = document.getElementById('loading');
 
     // ==========================================
-    // LOGIKA DELAY 6 DETIK
+    // LOGIKA DELAY 5 DETIK
     // ==========================================
     const startTime = Date.now();
-    const MIN_LOAD_TIME = 6000; // 6 detik dalam milidetik
+    const MIN_LOAD_TIME = 5000; // 5 detik dalam milidetik
     
     function loadApp() {
       const fullUrl = window.location.href;
@@ -211,20 +211,14 @@
 
       // Jika belum 6 detik, tunggu sisa waktunya
       if (remainingTime > 0) {
-        console.log(`Konten siap, menunggu ${remainingTime}ms agar genap 6 detik...`);
+        console.log(`Konten siap, menunggu ${remainingTime}ms agar genap 5 detik...`);
         setTimeout(hideLoading, remainingTime);
       } else {
-        // Jika sudah lebih dari 6 detik, langsung sembunyikan
+        // Jika sudah lebih dari 5 detik, langsung sembunyikan
         hideLoading();
       }
     });
     
-window.addEventListener('message', function(event) {
-      if (event.data && event.data.action === 'download' && event.data.url) {
-        window.open(event.data.url, '_blank');
-      }
-    });
-
     window.addEventListener('DOMContentLoaded', loadApp);
   </script>
 </body>
