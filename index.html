@@ -155,7 +155,7 @@
     </div>
 
     <div class="iframe-container">
-      <iframe id="appFrame" src="" allow="fullscreen; camera; microphone" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"></iframe>
+      <iframe id="appFrame" src="" allow="fullscreen; camera; microphone" sandbox="allow-scripts allow-forms allow-popups allow-modals allow-downloads"></iframe>
     </div>
   </div>
 
@@ -219,6 +219,12 @@
       }
     });
     
+window.addEventListener('message', function(event) {
+      if (event.data && event.data.action === 'download' && event.data.url) {
+        window.open(event.data.url, '_blank');
+      }
+    });
+
     window.addEventListener('DOMContentLoaded', loadApp);
   </script>
 </body>
