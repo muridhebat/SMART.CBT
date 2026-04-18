@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SMART CBT</title>
-  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3352/3352908.png" type="image/x-icon">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/9805/9805578.png" type="image/x-icon">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -39,9 +39,6 @@
       background: #f1f5f9; 
     }
     
-    /* ========================================
-       LOADING SCREEN - KUBUS 3D (VERSI KECIL & CEPAT)
-       ======================================== */
     .loading { 
       position: fixed; 
       top: 0; 
@@ -127,6 +124,102 @@
       80%, 100% { content: '...'; }
     }
 
+    /* ========================================
+       TAMPILAN PESAN ERROR
+       ======================================== */
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      padding: 40px 20px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .error-box {
+      background: #fff;
+      border: 2px solid #fecaca;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 500px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .error-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      color: #dc2626;
+    }
+
+    .error-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+
+    .error-desc {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .error-step {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: left;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    .error-step-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #dc2626;
+      margin-bottom: 4px;
+    }
+
+    .error-step-desc {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .error-step code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #be123c;
+    }
+
+    .btn-retry {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn-retry:hover {
+      background: #2563eb;
+    }
+
   </style>
 </head>
 <body>
@@ -147,33 +240,76 @@
       <p class="loading-text">Memuat Aplikasi</p>
     </div>
 
-    <div class="iframe-container">
+    <!-- Container untuk Iframe atau Pesan Error -->
+    <div class="iframe-container" id="iframeContainer">
       <iframe id="appFrame" src="" allow="fullscreen; camera; microphone" sandbox="allow-scripts allow-forms allow-popups allow-modals allow-downloads"></iframe>
     </div>
+
+    <!-- Pesan Error (Awalnya tersembunyi, akan ditampilkan oleh JavaScript jika ada error) -->
+    <div class="iframe-container" id="errorContainer" style="display: none;">
+      <div class="error-container">
+        <div class="error-box">
+          <div class="error-icon">⚠️</div>
+          <div class="error-title">Gagal Memuat Aplikasi</div>
+          <div class="error-desc">
+            Terjadi error pada script. Kemungkinan ada kode JavaScript yang rusak di file <strong>index.html</strong> (Google Apps Script).
+          </div>
+          
+          <div class="error-step">
+            <div class="error-step-title">LANGKAH 1: Buka Link Script Langsung</div>
+            <div class="error-step-desc">
+              Buka link Apps Script di browser (bukan lewat GitHub Pages).<br>
+              <strong>URL:</strong> <code id="scriptUrlDisplay" style="word-break:break-all;"></code>
+            </div>
+          </div>
+
+          <div class="error-step">
+            <div class="error-step-title">LANGKAH 2: Buka Console (F12)</div>
+            <div class="error-step-desc">
+              Tekan <code>F12</code> → tab <strong>Console</strong> → lihat pesan error merah.<br>
+              <strong>Jika tidak ada error</strong> di Console, masuk ke tab <strong>Network</strong> → klik file <code>index.html</code> → lihat responsenya.
+            </div>
+          </div>
+
+          <div class="error-step">
+            <div class="error-step-title">LANGKAH 3: Perbaiki Error di Kode.gs</div>
+            <div class="error-step-desc">
+              Setelah menemukan pesan error, perbaiki di file <strong>Kode.gs</strong> di Google Apps Script Editor, lalu deploy ulang.
+            </div>
+          </div>
+
+          <button class="btn-retry" onclick="location.reload()">
+            🔄 Coba Lagi
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
     // URL Google Apps Script Anda
     const APP_URL = "https://script.google.com/macros/s/AKfycbwozkAOWm1JUgX2SU3e3lvVR3Lk4CBrUCjWCKSE_NIf0bN_PZfmw9QitZtbaZYBwEow5Q/exec";
     
-    const appFrame = document.getElementById('appFrame');
-    const loading = document.getElementById('loading');
+    const appFrame = document.getElementById("appFrame");
+    const loading = document.getElementById("loading");
+    const iframeContainer = document.getElementById("iframeContainer");
+    const errorContainer = document.getElementById("errorContainer");
+    
+    // Tampilkan URL script untuk memudahkan debugging
+    document.getElementById("scriptUrlDisplay").textContent = APP_URL;
 
-    // ==========================================
-    // LOGIKA DELAY 6 DETIK
-    // ==========================================
     const startTime = Date.now();
     const MIN_LOAD_TIME = 6000; 
     
     function loadApp() {
-      const fullUrl = window.location.href;
       const params = new URLSearchParams(window.location.search);
-      const id = params.get('id');
+      const id = params.get("id");
       
       let targetUrl = APP_URL;
       
       if (id) {
-        if (targetUrl.indexOf('?') !== -1) {
+        if (targetUrl.indexOf("?") !== -1) {
              targetUrl += "&id=" + id;
         } else {
              targetUrl += "?id=" + id;
@@ -184,10 +320,24 @@
     }
     
     function hideLoading() {
-      loading.classList.add('hidden');
+      loading.classList.add("hidden");
     }
 
-    appFrame.addEventListener('load', function() {
+    function showError() {
+      // Sembunyikan iframe dan loading, tampilkan pesan error
+      iframeContainer.style.display = "none";
+      errorContainer.style.display = "flex";
+      loading.classList.add("hidden");
+    }
+
+    // ==========================================
+    // DETEKSI JIKA IFRAME GAGAL MEMUAT
+    // ==========================================
+    appFrame.addEventListener("error", function() {
+      showError();
+    });
+    
+    appFrame.addEventListener("load", function() {
       const elapsedTime = Date.now() - startTime;
       const remainingTime = MIN_LOAD_TIME - elapsedTime;
 
@@ -200,8 +350,6 @@
     
     // ==========================================
     // TANGKAP PESAN DOWNLOAD DARI IFRAME
-    // Browser memblokir window.open dari dalam iframe, 
-    // jadi iframe mengirim pesan ke sini, lalu sini yang membukanya.
     // ==========================================
     window.addEventListener("message", function(event) {
       if (event.data && event.data.action === "download" && event.data.url) {
